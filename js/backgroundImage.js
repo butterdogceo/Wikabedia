@@ -29,8 +29,16 @@ async function backgroundImage() {
       
       const image = item.image.toString();
       let img = '';
+      let isGoogleDriveUrl = false;
       
-      if (image.includes("../") === false && image.includes("https://drive.google.com") === false) {
+      try {
+        const parsedUrl = new URL(image, window.location.origin);
+        isGoogleDriveUrl = parsedUrl.protocol === "https:" && parsedUrl.hostname === "drive.google.com";
+      } catch (e) {
+        isGoogleDriveUrl = false;
+      }
+      
+      if (image.includes("../") === false && isGoogleDriveUrl === false) {
         img = image;
       } else {
         img = image.replace('../', '');
