@@ -41,7 +41,7 @@ async function backgroundImage() {
       if (image.includes("../") === false && isGoogleDriveUrl === false) {
         img = image;
       } else {
-        img = image.replace('../', '');
+        img = image.replace(/\.\.\//g, '');
       }
       
       imageList.push(img); // Save item.image into the list
