@@ -2,6 +2,16 @@ const headImageElement = document.getElementById("headImage");
 let currentIndex = 0; // Keep track of the current index in the imageList
 let imageList = []; // Store the list of images
 
+function removeParentTraversalSegments(input) {
+  let previous;
+  let sanitized = input;
+  do {
+    previous = sanitized;
+    sanitized = sanitized.replace(/\.\.\//g, '');
+  } while (sanitized !== previous);
+  return sanitized;
+}
+
 function changeBackgroundImage() {
   headImageElement.style.backgroundImage = `url('${imageList[currentIndex]}')`;
   currentIndex = (currentIndex + 1) % imageList.length; // Cycle to the next image
@@ -41,7 +51,7 @@ async function backgroundImage() {
       if (image.includes("../") === false && isGoogleDriveUrl === false) {
         img = image;
       } else {
-        img = image.replace(/\.\.\//g, '');
+        img = removeParentTraversalSegments(image);
       }
       
       imageList.push(img); // Save item.image into the list
