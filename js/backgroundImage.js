@@ -1,7 +1,9 @@
+const headImageElement = document.getElementById("headImage");
 let currentIndex = 0; // Keep track of the current index in the imageList
+let imageList = []; // Store the list of images
 
 function changeBackgroundImage() {
-  document.getElementById("headImage").style.backgroundImage = `url('${imageList[currentIndex]}')`;
+  headImageElement.style.backgroundImage = `url('${imageList[currentIndex]}')`;
   currentIndex = (currentIndex + 1) % imageList.length; // Cycle to the next image
 }
 
@@ -10,6 +12,7 @@ async function backgroundImage() {
     while (!done) {
       await new Promise(resolve => setTimeout(resolve, 150));
     }
+    
     const shuffledData = data.slice();
     for (let i = shuffledData.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -27,12 +30,10 @@ async function backgroundImage() {
       const image = item.image.toString();
       let img = '';
       
-      if (image.includes("../") === false) {
-        if (image.includes("https://drive.google.com") === true) {
-          img = image;
-        }
+      if (image.includes("../") === false && image.includes("https://drive.google.com") === false) {
+        img = image;
       } else {
-        img = image.replace('../','');
+        img = image.replace('../', '');
       }
       
       imageList.push(img); // Save item.image into the list
