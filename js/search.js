@@ -77,12 +77,12 @@ async function search(mode) {
     searchQuery = url.searchParams.get("search");
   } else if (mode === "page") {
     searchQuery = searchBoxElement.value;
-    window.location.href = "?search=" + searchQuery;
   } else if (mode === "page2") {
     searchQuery = searchBox2Element.value;
-    url.searchParams.set("search", searchQuery);
-    window.history.pushState({}, '', url);
   }
+
+  url.searchParams.set("search", searchQuery);
+  window.history.pushState({}, '', url);
 
   searchQueryElement.innerText = `saerched 4 "${searchQuery}"`;
   searchBox2Element.value = searchQuery;

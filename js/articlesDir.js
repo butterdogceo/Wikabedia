@@ -140,9 +140,7 @@ async function getSheetData() {
   const sheetData = await response.json();
   const data = sheetData.data;
 
-  if (sheetDataCache === null) {
-    sheetDataCache = data;
-  }
+  sheetDataCache = data;
 
   return data;
 }
@@ -187,13 +185,6 @@ function formatData(dat) {
       // increase the article count
       if (responseNumber > articleCount) {
         articleCount = responseNumber;
-      }
-
-      // log the image url for debugging
-      try {
-        image = image.replace("../", "");
-      } catch (err) {
-        console.error(err);
       }
 
       const item = {
