@@ -179,3 +179,8 @@ p {
   color: rgb(160, 160, 160);
   text-align: center;
 }
+
+.warning {
+  cursor: help;
+  color: #ee2;
+}

@@ -27,8 +27,8 @@
   <p class="logoDesc">te worlds source of infomation</p>
   <div class="topButtons">
     <div class="search">
-      <img src="img/search.png" onclick="search()">
-      <input type="text" placeholder="saerch for somting" id="searchBox" onkeydown="search2(this)">
+      <img src="img/search.png">
+      <input type="text" placeholder="saerch for somting" id="searchBox">
     </div>
     <div class="create" onclick="site('creator.html')">
       <img src="img/create.png">
@@ -37,12 +37,12 @@
   </div>
   <br>
   <hr>
-  <h2 class="all" onclick="load('no don click me','why did you click that','img/wikabedia.png','#','items');">lates article</h2>
+  <h2 class="all" onclick="addCard('no don click me','why did you click that','img/wikabedia.png',null,'items');">lates article</h2>
   <div class="items" id="items"></div>
-  <h2 class="toparticle" onclick="load('yor mom','haha','img/creating-a-piep-bom.jpg','#','top')">top articals of panet earht</h2>
+  <h2 class="toparticle" onclick="addCard('yor mom','haha','img/creating-a-piep-bom.jpg',null,'top')">top articals of panet earht</h2>
   <div class="items" id="top"></div>
 
-  <h2 class="recomend" onclick="load('yuo smel','imagien','img/creating-a-piep-bom.jpg','#','recomend')">recomend article</h2>
+  <h2 class="recomend" onclick="addCard('yuo smel','imagien','img/creating-a-piep-bom.jpg',null,'recomend')">recomend article</h2>
   <div class="items" id="recomend"></div>
 
   <div class="loading" id="loadDiv">
@@ -72,7 +72,7 @@
         try {
           for (var item of data) {
             if (item.title && item.desc && item.image && item.link && item.place) {
-              load(item.title, item.desc, item.image, item.link, item.place);
+              addCard(item.title, item.desc, item.image, item.link, item.place);
             }
           }
 
@@ -84,9 +84,9 @@
           const e = data[3];
           const f = data[13];
           const g = data[9];
-          load(e.title, e.desc, e.image, e.link, "top");
-          load(f.title, f.desc, f.image, f.link, "top");
-          load(g.title, g.desc, g.image, g.link, "top");
+          addCard(e.title, e.desc, e.image, e.link, "top");
+          addCard(f.title, f.desc, f.image, f.link, "top");
+          addCard(g.title, g.desc, g.image, g.link, "top");
         }
         catch (err) {
           console.error(err);

@@ -1,5 +1,9 @@
 @import url(main.css);
 
+body {
+  margin-top: 100px;
+}
+
 h1 {
   font-size: 4vh;
   cursor: default;
@@ -73,17 +77,12 @@ hr {
   animation: none;
 }
 
-.items,
-#items,
-.items2,
-#items2 {
-  display: inline-flex;
-  flex-wrap: wrap;
-  margin-left: 50%;
-  min-height: 850px;
-  overflow-y: scroll;
-  width: 100vw;
-  transform: translateX(-50%);
+.searchItems {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 260px));
+  width: 100%;
+  height: auto;
+  max-height: none;
 }
 
 .logoDesc,
@@ -134,12 +133,6 @@ p {
 #notFound {
   margin-left: 5vh;
   color: rgb(160, 160, 160);
-}
-
-#queryText {
-  margin-top: 100px;
-  margin-left: 30px;
-  color: rgb(130, 130, 130);
 }
 
 #loadingImage {

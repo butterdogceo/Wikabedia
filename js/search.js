@@ -3,7 +3,6 @@ const notFoundElement = document.getElementById('notFound');
 const searchBoxContainerElement = document.getElementById('search');
 const searchDivElement = document.getElementById('searchDiv');
 const searchItemsElement = document.getElementById('searchItems');
-const searchQueryElement = document.getElementById('searchQuery');
 const searchBoxElement = document.getElementById('searchBox');
 const searchBox2Element = document.getElementById('searchBox2');
 const searchIgnoredWords = ['how', 'the', 'to', 'do'];
@@ -14,49 +13,6 @@ function sleep(milliseconds) {
   do {
     currentDate = Date.now();
   } while (currentDate - date < milliseconds);
-}
-
-function updateQueryStringParameter(uri, key, value) {
-  var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-  var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-  if (uri.match(re)) {
-    return uri.replace(re, '$1' + key + "=" + value + '$2');
-  }
-  else {
-    return uri + separator + key + "=" + value;
-  }
-}
-
-function load(head, text, image, url, element) {
-  if (image.includes("../")) {
-    image = image.replace("../", "");
-  }
-
-  if (url === null) {
-    url == "#";
-  }
-
-  if (element === null) {
-    element = "items";
-  }
-
-  const div = document.createElement('div');
-  div.setAttribute('class','item');
-  div.addEventListener('click', () => site(url));
-
-  const img = document.createElement('img');
-  img.setAttribute('src', image);
-  div.appendChild(img);
-  
-  const heading = document.createElement('h3');
-  heading.innerHTML = head;
-  div.appendChild(heading);
-
-  const p = document.createElement('p');
-  p.innerHTML = text;
-  div.appendChild(p);
-  
-  document.getElementById(element).appendChild(div);
 }
 
 function site(url) {
@@ -74,17 +30,16 @@ async function search(mode) {
 
   let searchQuery = '';
   if (mode === "load") {
-    searchQuery = url.searchParams.get("search");
+    searchQuery = url.searchParams.get("query");
   } else if (mode === "page") {
     searchQuery = searchBoxElement.value;
   } else if (mode === "page2") {
     searchQuery = searchBox2Element.value;
   }
 
-  url.searchParams.set("search", searchQuery);
+  url.searchParams.set("query", searchQuery);
   window.history.pushState({}, '', url);
 
-  searchQueryElement.innerText = `saerched 4 "${searchQuery}"`;
   searchBox2Element.value = searchQuery;
 
   let exactMatches = [];
@@ -123,7 +78,7 @@ async function search(mode) {
   // Concatenate the arrays and load the results into the searchItemsElement
   const results = exactMatches.concat(partialMatches);
   results.forEach(item => {
-    load(item.title, item.desc, item.image, item.link, "searchItems");
+    addCard(item.title, item.desc, item.image, item.link, "searchItems");
   });
 
   if (searchItemsElement.hasChildNodes() === false && results.length === 0) {
@@ -138,38 +93,6 @@ async function search(mode) {
   }
 }
 
-function search2(key) {
-  if (event.key === "Enter") {
-    search("page2");
-  }
-}
-
 window.addEventListener("load", () => {
   search("load");
-});
-
-let focused = false
-
-// yo bro what idiot wrote this code- oh nvm that was me my bad
-
-searchBoxElement.addEventListener("onfocus", function() {
-  document.getElementById('searchDiv').style.width = "20vh";
-  focused = true;
-});
-
-searchBoxElement.addEventListener("onfocusout", function() {
-  document.getElementById('searchDiv').style.width = "20vh";
-  focused = false;
-});
-
-searchBoxElement.addEventListener("mouseover", function() {
-  document.getElementById('searchDiv').style.width = "20vh";
-});
-
-searchBoxElement.addEventListener("mouseout", function() {
-  if (focused === true) {
-    document.getElementById('searchDiv').style.width = "20vh";
-  } else if (!searchBoxElement.hasFocus() && searchBoxElement.value === "") {
-    document.getElementById('searchDiv').style.width = "2.5vh";
-  }
 });

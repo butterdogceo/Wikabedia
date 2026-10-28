@@ -29,16 +29,15 @@
         <p>create article</p>
       </div>
     </div>
-    <h3 id="queryText">serch 4 somting</h3>
     <div class="search2">
       <img src="img/search.png" class="icon" onclick="search('page2');">
-      <input type="text" placeholder="saerch for somting" id="searchBox2" onkeydown="search2(this)">
+      <input type="text" placeholder="saerch for somting" id="searchBox2" onkeydown="search('page2')">
     </div>
-    <div class="items" id="searchItems">
+    <div class="items searchItems" id="searchItems">
       <img id="loadingImage" src="img/loading.gif">
     </div>
     <hr>
-    <h2 class="recomend" onclick="load('no don click me','why did you click that','../img/wikabedia.png','#','recomend');">recomend articles</h2>
+    <h2 class="recomend" onclick="addCard('no don click me','why did you click that','../img/wikabedia.png',null,'recomend');">recomend articles</h2>
     <div class="items" id="recomend"></div>
     
     <div class="loading" id="loadDiv">
