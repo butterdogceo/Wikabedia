@@ -1,56 +1,67 @@
-const errorDiv = document.createElement("div");
-errorDiv.style.display = "none";
-errorDiv.style.background = "white";
-errorDiv.style.position = "fixed";
-errorDiv.style.top = "50%";
-errorDiv.style.left = "50%";
-errorDiv.style.transform = "translate(-50%, -50%)";
-errorDiv.style.border = "2px solid gray";
-errorDiv.style.width = "90vw";
-errorDiv.style.height = "90vh";
-errorDiv.style.zIndex = "999999999999999999999999999999999999999999999999";
-errorDiv.style.overflowY = "scroll";
+const isSearchPage = window.location.pathname.startsWith('/search');
 
-const notice = document.createElement("p");
-notice.innerText = "Debug Console | CTRL + Y to toggle";
-notice.style.paddingBottom = "5px";
-notice.style.paddingTop = "5px";
-notice.style.textAlign = "center";
-notice.style.borderBottom = "2px solid gray";
-
-errorDiv.appendChild(notice);
-document.body.appendChild(errorDiv);
-
-function createLog(type, msg, url, linenumber) {
-  const e = document.createElement("p");
-  if (type != "error") {
-    e.innerHTML = `${msg}`;
-    e.title = type;
-    e.style.background = "rgba(20,20,20,0.1)";
-    e.style.color = "black";
-  } else {
-    e.innerHTML = `Error: ${msg}<br>URL: ${url}<br>Line: ${linenumber}`;
-    e.style.background = "rgba(230,20,20,0.1)";
-    e.style.color = "rgb(230,20,20)";
+/*
+function search() {
+  url = "../search.html?search=" + document.getElementById('searchBox').value;
+  if (url !== undefined) {
+    document.body.style.opacity = 0;
+    setTimeout(function() {
+      window.location.href = url;
+    }, 250);
   }
-  e.style.width = "100%";
-  e.style.paddingBottom = "5px";
-  e.style.paddingTop = "5px";
-  e.style.fontFamily = "monospace";
-  errorDiv.appendChild(e);
 }
 
-window.onerror = function(msg, url, linenumber) {
-  createLog("error", msg, url, linenumber);
-  return true;
-};
-
-document.body.onkeydown = function(event) {
-  if (event.keyCode === 89 && event.ctrlKey) {
-    if (errorDiv.style.display === "block") {
-        errorDiv.style.display = "none";
-    } else {
-        errorDiv.style.display = "block";
-    }
+function search2(key) {
+  if (event.key === "Enter") {
+    search("page2");
   }
-};
+}
+*/
+
+if (!isSearchPage) {
+  window.search = (query) => {
+    query = encodeURIComponent(query.trim());
+    
+    const pageUrl = new URL(window.location.href);
+    pageUrl.pathname = 'search';
+    pageUrl.searchParams.set('query', query);
+    window.location.replace(pageUrl.href);
+  }
+
+  const searchBoxElement = document.getElementById('searchBox');
+  if (searchBoxElement) searchBoxElement.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      window.search(searchBoxElement.value);
+    }
+  });
+}
+
+function addCard(title, description, image, url, parent) {
+  if (!parent) parent = 'items';
+
+  const parentElement = document.getElementById(parent);
+  if (!parentElement) {
+    console.error('Attempted to create card with non-existent parent:', parent);
+    return;
+  }
+
+  const cardElement = document.createElement('a');
+  cardElement.classList.add('item');
+  cardElement.href = url;
+  
+  const imageElement = document.createElement('img');
+  imageElement.setAttribute('loading', 'lazy');
+  imageElement.setAttribute('src', image.replace('../', '/'));
+  cardElement.append(imageElement);
+
+  const titleElement = document.createElement('h3');
+  titleElement.innerText = title;
+  cardElement.append(titleElement);
+
+  const descriptionElement = document.createElement('p');
+  descriptionElement.innerText = description.slice(0, 64);
+  cardElement.append(descriptionElement);
+
+  parentElement.append(cardElement);
+}

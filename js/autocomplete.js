@@ -119,15 +119,15 @@ function autocomplete(inp, arr) {
   }
   
   // execute a function when someone clicks in the document:
-  b.addEventListener("click", function (e) {
-    /*clear the current input value:*/
-    inp.value = "";
-    /*insert the value for the autocomplete text field:*/
-    inp.value = this.getElementsByTagName("input")[0].value;
-    /*close the list of autocompleted values,
-    (or any other open lists of autocompleted values:*/
-    closeAllLists();
-  });
+  // inp.addEventListener("click", function (e) {
+  //   /*clear the current input value:*/
+  //   inp.value = "";
+  //   /*insert the value for the autocomplete text field:*/
+  //   inp.value = this.getElementsByTagName("input")[0].value;
+  //   /*close the list of autocompleted values,
+  //   (or any other open lists of autocompleted values:*/
+  //   closeAllLists();
+  // });
 }
 
 setTimeout(function() {

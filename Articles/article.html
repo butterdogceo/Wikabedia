@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title id="pageTitle">article - wikabedia</title>
   <link rel="apple-touch-icon" sizes="256x256" href="../img/wikabedia.ico">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -31,7 +33,7 @@
   </div>
   <hr>
   <h2 class="recomend"
-    onclick="load('no don click me','why did you click that','../img/wikabedia.png','#','recomend');">recomend articles
+    onclick="addCard('no don click me','why did you click that','../img/wikabedia.png','#','recomend');">recomend articles
   </h2>
   <div class="items" id="recomend"></div>
   <div class="loading" id="loadDiv">
@@ -40,7 +42,7 @@
   </div>
 
   <footer>
-    <a class="not-a-button">copyirigt wikabedia 2025</a>
+    <span>copyirigt wikabedia 2026</span>
     <a href="../creator.html">maek an article 4 FRE!</a>
     <a href="#" onclick="theme()" id="themeToggle">dark moed</a>
   </footer>
@@ -51,36 +53,59 @@
   <script src="../js/theme.js"></script>
   <script src="../js/autocomplete.js"></script>
   <script>
-    var url = new URL(window.location);
-    var articleNum = url.searchParams.get("article");
-    let _backupArticleText;
-    
-    function processTags(text) {
-      var first = text.replaceAll("<", "&lt");
-      var second = first.replaceAll(">", "&gt");
-      return second;
-    }
-    
-    function processURLs(text) {
-      var regex = /\((.*?)\)\[(.*?)\]/g;;
-      var final = text.replace(regex, function(match, linkText, url) {
-        var link = url.trim();
-        var articleRegex = /Article\/\d+$/;
-        if (link.toString().match(articleRegex)) {
-          var id = link.split("/")[1];
-          link = `../Articles/article.html?article=${id}`;
-        }
-        return `<a href="${link}" title="${url.trim()}">${linkText.trim()}</a>`;
-      });
-      return final;
-    }
-    
-    function processText(text) {
-      var first = processTags(text);
-      var second = processURLs(first);
-      return second;
-    }
+    const URL_REGEX = /\((.*?)\)\[(.*?)\]/g;
+    const ARTICLE_REGEX = /Article\/\d+$/;
+    const DRIVE_URL_REGEX = /^https:\/\/drive\.google\.com\/open\?id=.*/;
 
+    const loadDiv = document.getElementById('loadDiv');
+
+    /*
+      "A", // date
+      "B", // email
+      "C", // name
+      "D", // title
+      "E", // desc
+      "F", // image
+      "G", // articleTitle
+      "H", // mainText
+      "I", // appropriate or not
+      "J", // reason for removal
+
+      sheetData("G", "articleTitle", "title");
+      sheetData("H", "articleText", "text");
+      sheetData("F", "articleImg", "image");
+      sheetData("C", "articleWriter", "writer");
+      sheetData("G", "", "pageTitle");
+      sheetData("A", "articleDate", "dateMade");
+    */
+
+    /**
+     * Map of data columns and their configurations (element?, elementType?, handler?)
+     */
+    const dataColumnConfig = {
+      'G': {
+        element: 'articleTitle',
+        handler: (content) => document.title = content + ' - wikabedia'
+      },
+      'H': {
+        element: 'articleText',
+        elementHandler: (content) => {
+          return processBodyText(sanitize(content));
+        }
+      },
+      'F': {
+        element: 'articleImg',
+        elementType: 'img'
+      },
+      'C': {
+        element: 'articleWriter'
+      },
+      'A': {
+        element: 'articleDate'
+      }
+    };
+
+    // Used for column indexes
     const columns = [
       "A", // date
       "B", // email
@@ -91,74 +116,136 @@
       "G", // articleTitle
       "H", // mainText
       "I", // appropriate or not
-    ]
+      "J", // reason for removal
+    ];
 
-    function processArticleText(text) {
-      return processText(text);
+    function sanitize(text) {
+      return text.replaceAll('<', '&lt').replaceAll('>', '&gt');
     }
-    
-    async function sheetData(column, id, mode) {
-      try {
-        const data = await getSheetData();
-        let val = data ? data[articleNum - 1][columns.indexOf(column)] : undefined;
 
-        if (mode === "image") {
-          try {
-          const linkPattern = /^https:\/\/drive\.google\.com\/open\?id=.*/;
-          if (linkPattern.test(val)) {
-            const imageId = val.replace('https://drive.google.com/open?id=', '');
-            const newImageUrl = `https://drive.google.com/thumbnail?id=${imageId}`;
-            document.getElementById(id).src = newImageUrl;
-          } else {
-            document.getElementById(id).src = val;
-          }
-          } catch (err) {
-          console.error(err);
-          }
-        } else if (mode === "title") {
-          document.getElementById(id).innerHTML = val === undefined ? "tis article no exist i tink" : val;
-        } else if (mode === "text") {
-          _backupArticleText = val;
-          document.getElementById(id).innerHTML = val === undefined ? "i forgor the text" : processArticleText(val);
-        } else if (mode === "writer") {
-          document.getElementById(id).innerHTML = val === undefined ? "article by your mother" : `article by ${val}`;
-        } else if (mode === "pageTitle") {
-          document.title = val === undefined ? "nothing - wikabedia" : `${val} - wikabedia`;
-        } else if (mode === "dateMade") {
-          document.getElementById(id).innerHTML = val === undefined ? 'created tomorrow' : `created ${val}`;
+    function processBodyText(text) {
+      return text.replace(URL_REGEX, (match, linkText, url) => {
+        if (url.startsWith('javascript') || url.length >= 128) {
+          url = url.slice(0, 128);
+
+          console.warn('Security risk encountered while processing body text. Found:', url);
+
+          const warningElement = document.createElement('span');
+          warningElement.classList.add('warning');
+          warningElement.innerText = linkText + ' ⚠️';
+          warningElement.setAttribute('title', 'Security risk encountered while processing body text. Found: ' + url);
+
+          return warningElement.outerHTML;
         }
 
-        return val;
-      } catch (error) {
-        document.getElementById('articleTitle').innerHTML = "error loading article";
-        console.error(error);
+        url = url.trim();
+        if (url.match(ARTICLE_REGEX)) {
+          const index = url.split("/")[1];
+          url = `../Articles/article.html?article=${index}`;
+        }
+
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+        a.setAttribute('title', url);
+        a.innerText = linkText;
+
+        return a.outerHTML;
+      });
+    }
+
+    function processImageUrl(url) {
+      if (url.startsWith('javascript') || !(url.startsWith('../') || url.startsWith('https://drive.google.com/'))) {
+        console.warn('Security risk encountered while processing image url. Found:', url);
+        return null;
+      }
+
+      try {
+        if (DRIVE_URL_REGEX.test(url)) {
+          const imageId = url.replace('https://drive.google.com/open?id=', '');
+          return `https://drive.google.com/thumbnail?id=${imageId}`;
+        } else {
+          return url;
+        }
+      } catch (err) {
+        console.error('Failed to process image URL', url, 'with error:', err);
+        return null;
       }
     }
 
-    const approved = sheetData("I", "", "approved");
-    if (approved === "no") {
-      window.location.href = "../Articles/article.html?article=1";
-      alert("this article has been removed by a moderator");
-    } else {
-      sheetData("G", "articleTitle", "title");
-      sheetData("H", "articleText", "text");
-      sheetData("F", "articleImg", "image");
-      sheetData("C", "articleWriter", "writer");
-      sheetData("G", "", "pageTitle");
-      sheetData("A", "articleDate", "dateMade");
+    function error(reason) {
+      alert(`Sorry, something went wrong while loading this article. Please try again later or report the following error along with this article name: ${reason || 'No error reason provided'}`);
     }
 
-    function checkLoad() {
-      if (document.getElementById('articleTitle').innerHTML != "loading" == false) {
-        window.setTimeout(checkLoad, 100);
-      } else {
-        document.getElementById('loadDiv').style.opacity = 0;
-        window.setTimeout(function () {
-          document.getElementById('loadDiv').remove();
-        }, 200);
+    async function loadArticle() {
+      const url = new URL(window.location);
+      const articleIndex = url.searchParams.get('article');
+      if (!articleIndex) {
+        console.error('No article index provided in URL');
+        error('No article index provided')
+        return;
       }
+
+      const sheetData = await getSheetData();
+      if (!sheetData) {
+        console.error('No sheet data recieved. articleIndex:', articleIndex, 'sheetData:', sheetData);
+        error('No sheet data');
+        return;
+      }
+
+      const articleData = sheetData[articleIndex - 1];
+      if (!articleData) {
+        console.error('No article data found for:', articleIndex, 'articleData:', articleData);
+        error('No article data');
+        return;
+      }
+
+      // Check for removal
+      const allowedValue = articleData[columns.indexOf('I')];
+      if (allowedValue === 'no') {
+        const removalReason = articleData[columns.indexOf('J')] || 'No reason provided';
+        alert('Sorry, this article is unavailable for the following reason: ' + removalReason);
+        window.location.href = '../';
+        throw new Error('Break');
+      }
+
+      for (const [ column, config ] of Object.entries(dataColumnConfig)) {
+        const columnIndex = columns.indexOf(column);
+        if (columnIndex === -1) {
+          console.warn('Invalid column:', column);
+          continue;
+        }
+
+        const columnValue = articleData[columnIndex];
+        if (columnValue === null) {
+          console.warn('No value for column:', column);
+          continue;
+        }
+
+        const element = config.element ? document.getElementById(config.element) : null;
+        if (element) {
+          switch (config.elementType) {
+            case 'img':
+              const src = processImageUrl(columnValue);
+              if (src) element.src = src;
+              break;
+            default:
+              const output = config.elementHandler ? config.elementHandler(columnValue) : sanitize(columnValue);
+              element.innerHTML = output;
+              break;
+          }
+        }
+
+        const handler = config.handler;
+        if (config.handler) config.handler(columnValue);
+      }
+
+      loadDiv.style.opacity = 0;
+      setTimeout(() => {
+        loadDiv.remove();
+      }, 200);
     }
-    checkLoad();
+
+    loadArticle();
   </script>
   <script src="../js/recomend.js"></script>
 </body>

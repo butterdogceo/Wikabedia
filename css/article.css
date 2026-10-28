@@ -149,7 +149,8 @@ hr {
     transition-property: background-color, opacity;
   }
 
-  button:hover, button:focus {
+  button:hover,
+  button:focus {
     background-color: var(--background2);
     opacity: 1;
   }
@@ -177,4 +178,9 @@ p {
   cursor: default;
   color: rgb(160, 160, 160);
   text-align: center;
+}
+
+.warning {
+  cursor: help;
+  color: #ee2;
 }

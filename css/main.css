@@ -197,6 +197,7 @@ body {
   margin: 1.1vw;
   cursor: pointer;
   box-shadow: var(--shadow1);
+  text-decoration: none;
 }
 
 .item:hover {
@@ -381,6 +382,10 @@ footer {
   padding-bottom: 2vh;
 }
 
+footer span {
+  color: var(--text1);
+}
+
 footer a {
   padding: 1vh;
   width: 4vh;
@@ -396,13 +401,4 @@ footer a {
 footer a:hover {
   filter: brightness(95%);
   box-shadow: 0px 0px 2vh var(--shadow1);
-}
-
-footer .not-a-button {
-  background: none !important;
-  cursor: default;
-}
-
-footer .not-a-button:hover {
-  box-shadow: none;
 }
